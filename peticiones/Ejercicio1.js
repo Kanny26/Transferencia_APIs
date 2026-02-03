@@ -2,57 +2,51 @@
 // Una aplicación web requiere mostrar un listado de usuarios activos junto con la cantidad
 // de publicaciones que han realizado. Sin embargo, no todos los usuarios han creado
 // publicaciones. El sistema debe identificar correctamente estos casos.
-// Requerimientos
-// • Consultar la lista completa de usuarios.
-// • Consultar la lista de publicaciones.
-// • Identificar cuáles usuarios tienen publicaciones asociadas.
-// • Calcular la cantidad de publicaciones por usuario.
-// • Mostrar también los usuarios que no tienen publicaciones.
-// Datos de entrada
-// • Endpoint de usuarios (users).
-// • Endpoint de publicaciones (posts).
-// • Identificador del usuario (userId)
-// Datos de salida
-// • Listado de usuarios con:
-// o Nombre del usuario
-// o Cantidad de publicaciones asociadas (puede ser 0)
 
+// Función asíncrona principal que obtiene usuarios activos y cuenta sus publicaciones
 const usuariosActivosConPublicaciones = async () => {
     
-    //mostrar la lista completa de usuarios 
+    // Realizar petición GET para obtener la lista completa de usuarios desde la API
     const listaCompleta = await fetch(`http://localhost:3000/users`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     });
+    // Convertir la respuesta a formato JSON
     const usuarios = await listaCompleta.json();
     
-    //mostrar la lista de publicaciones
+    // Realizar petición GET para obtener todas las publicaciones desde la API
     const listaPublicaciones = await fetch(`http://localhost:3000/posts`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     });
+    // Convertir la respuesta a formato JSON
     const publicaciones = await listaPublicaciones.json();
 
-    //calcular publicaciones por usuario
+    // Crear array vacío para almacenar el resultado final
     const publicacionesPorUsuario = [];
 
+    // Recorrer cada usuario para verificar si está activo y contar sus publicaciones
     for (let i = 0; i < usuarios.length; i++) {
         const usuario = usuarios[i];
 
+        // Verificar si el usuario tiene el estado activo
         if (usuario.active === true) {
+            // Inicializar contador de publicaciones en 0
             let numpublicaciones = 0;
 
+            // Recorrer todas las publicaciones para contar las que pertenecen al usuario actual
             for (let publicacion = 0; publicacion < publicaciones.length; publicacion++) {
-                // Convertir el id del usuario a número para comparar
+                // Comparar el userId de la publicación con el id del usuario (convertido a número)
                 if (publicaciones[publicacion].userId === Number(usuario.id)) {
                     numpublicaciones++;
                 }
             }
 
+            // Agregar el usuario y su cantidad de publicaciones al array de resultados
             publicacionesPorUsuario.push({
                 nombreUsuario: usuario.name,
                 cantidadPublicaciones: numpublicaciones
@@ -60,14 +54,16 @@ const usuariosActivosConPublicaciones = async () => {
         }
     }
 
-    //mostrar usuarios y sus publicaciones
+    // Mostrar encabezado en consola
     console.log("Usuarios activos y sus publicaciones: ");
+    // Recorrer e imprimir cada usuario con su cantidad de publicaciones
     for (let i = 0; i < publicacionesPorUsuario.length; i++) {
         console.log(`Nombre: ${publicacionesPorUsuario[i].nombreUsuario} - Cantidad de publicaciones: ${publicacionesPorUsuario[i].cantidadPublicaciones}`);
     }
 
+    // Retornar el array con los resultados
     return publicacionesPorUsuario;
-
 }
 
+// Ejecutar la función principal
 usuariosActivosConPublicaciones();
