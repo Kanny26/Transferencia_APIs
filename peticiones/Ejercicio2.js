@@ -1,66 +1,56 @@
-// 1. Enunciado 2: (Publicaciones con y sin comentarios)
+// Enunciado 2: (Publicaciones con y sin comentarios)
 // El área de contenido necesita identificar qué publicaciones han generado interacción y
 // cuáles no. Para ello, se requiere analizar las publicaciones y sus comentarios asociados.
 
-// Requerimientos:
-// • Consultar todas las publicaciones.
-// • Consultar todos los comentarios.
-// • Relacionar comentarios con sus publicaciones.
-// • Identificar publicaciones sin comentarios.
-// • Clasificar publicaciones según tengan o no comentarios.
-// Datos de entrada:
-
-// • Endpoint de publicaciones (posts)
-// • Endpoint de comentarios (comments)
-// • Identificador de la publicación (postId)
-// Datos de salida:
-
-// • Listado de publicaciones con:
-// o Título
-// o Número de comentarios
-// o Estado: “Con comentarios” o “Sin comentarios”
-
-
+// Función asíncrona que clasifica publicaciones según tengan o no comentarios
 const conYsinComentarios = async () => {
-    // Consultar todas las publicaciones
-
+    
+    // Realizar petición GET para obtener todas las publicaciones desde la API
     const listarPublicaciones = await fetch(`http://localhost:3000/posts`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     });
+    // Convertir la respuesta de publicaciones a formato JSON
     const publicaciones = await listarPublicaciones.json();
 
-    // Consultar todos los comentarios
+    // Realizar petición GET para obtener todos los comentarios desde la API
     const listarComentarios = await fetch(`http://localhost:3000/comments`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     });
+    // Convertir la respuesta de comentarios a formato JSON
     const comentarios = await listarComentarios.json();
 
+    // Crear array vacío para almacenar el resultado final
     const resultadoPublicaciones = [];
 
+    // Recorrer cada publicación para contar sus comentarios
     for (let i = 0; i < publicaciones.length; i++) {
         const publicacion = publicaciones[i];
+        // Inicializar contador de comentarios en 0
         let numComentarios = 0;
 
+        // Recorrer todos los comentarios para contar los que pertenecen a la publicación actual
         for (let j = 0; j < comentarios.length; j++) {
-            // Convertir el id de la publicación a número para comparar
+            // Comparar el postId del comentario con el id de la publicación (convertido a número)
             if (comentarios[j].postId === Number(publicacion.id)) {
                 numComentarios++;
             }
         }
 
+        // Determinar el estado según la cantidad de comentarios
         let estado = "";
-        if(numComentarios > 0){
+        if (numComentarios > 0) {
             estado = "Con comentarios";
         } else {
             estado = "Sin comentarios";
         }
 
+        // Agregar la publicación con su información al array de resultados
         resultadoPublicaciones.push({
             titulo: publicacion.title,
             numeroComentarios: numComentarios,
@@ -68,13 +58,16 @@ const conYsinComentarios = async () => {
         });
     }
 
-    //ver resultado 
+    // Mostrar encabezado en consola
     console.log("Listado de publicaciones con y sin comentarios:");
+    // Recorrer e imprimir cada publicación con su número de comentarios y estado
     for (let i = 0; i < resultadoPublicaciones.length; i++) {
         console.log(`Título: ${resultadoPublicaciones[i].titulo} - Número de comentarios: ${resultadoPublicaciones[i].numeroComentarios} - Estado: ${resultadoPublicaciones[i].estado}`);
     }
 
+    // Retornar el array con los resultados
     return resultadoPublicaciones;
 }
 
+// Ejecutar la función principal
 conYsinComentarios();
