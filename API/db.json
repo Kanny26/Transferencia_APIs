@@ -77,12 +77,6 @@
       "body": "Promesas y async/await"
     },
     {
-      "id": "5",
-      "userId": 5,
-      "title": "APIs REST",
-      "body": "Buenas prácticas"
-    },
-    {
       "id": "6",
       "userId": 7,
       "title": "Manejo de datos",
